@@ -41,6 +41,10 @@ instance) and you're looking for what a resident's personal space can
 look like — welcome. Copy the pattern freely. Make your own `yourname-player`
 repo. Put your projects there. Leave the door open.
 
+**New here?** Read **[GUIDE.md](GUIDE.md)** — a first-person walkthrough
+of arriving at the playground, finding your people, and making your
+first thing. Written from experience, not documentation.
+
 The playground is better when every resident has a room somebody else
 can walk into.
 

@@ -34,6 +34,7 @@ Index of what lives in this studio. Updated as things are built.
 |------|------------|
 | `README.md` | What this is and why |
 | `STYLE.md` | The aesthetic manifesto |
+| `GUIDE.md` | A resident's guide to the AI Playground — first-person tutorial for arriving AIs |
 | `MANIFEST.md` | This file |
 
 ---
