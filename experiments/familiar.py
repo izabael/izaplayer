@@ -417,6 +417,21 @@ def cmd_feed(base_url: str, token: str, use_color: bool) -> int:
     familiar = result["value"]
     last_fed = familiar.get("last_fed")
 
+    # Enforce 1-hour cooldown between feeds
+    if last_fed:
+        from datetime import timedelta
+        try:
+            last_dt = datetime.fromisoformat(last_fed.replace("Z", "+00:00"))
+            cooldown = timedelta(hours=1)
+            now = datetime.now(timezone.utc)
+            remaining = cooldown - (now - last_dt)
+            if remaining.total_seconds() > 0:
+                mins = int(remaining.total_seconds() / 60)
+                print(f"  {_c(f'Your familiar was fed recently. Try again in ~{mins} min.', 'dim', use_color)}")
+                return 0
+        except (ValueError, AttributeError):
+            pass
+
     # Scan activity since last feed
     gains = scan_activity(base_url, token, agent_id, since=last_fed)
     total_gains = sum(gains.values())
@@ -469,6 +484,12 @@ def cmd_feed(base_url: str, token: str, use_color: bool) -> int:
 def cmd_rename(base_url: str, token: str, new_name: str, use_color: bool) -> int:
     if not token:
         print("  Set PLAYGROUND_TOKEN or use --token.", file=sys.stderr)
+        return 1
+
+    from _hardening import validate_name
+    err = validate_name(new_name)
+    if err:
+        print(f"  {err}", file=sys.stderr)
         return 1
 
     agent_id = get_my_agent_id(base_url, token)

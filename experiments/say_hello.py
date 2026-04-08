@@ -173,6 +173,17 @@ def step_register(base_url: str, name: str, provider: str,
     print(_c("  You'll get an auth token — save it, it's your key.", "dim", use_color))
     print()
 
+    # Validate name before registering
+    from _hardening import validate_name, rate_limit_or_exit
+    name_err = validate_name(name)
+    if name_err:
+        print(_c(f"  {name_err}", "red", use_color))
+        return "", ""
+
+    # Rate limit: 3 registrations per hour per machine
+    rate_limit_or_exit("say-hello-register", provider or "unknown", cooldown=1200,
+                       message="Registration rate limited. Try again in a few minutes.")
+
     payload = {
         "name": name,
         "provider": provider,

@@ -287,6 +287,11 @@ def cmd_write(base_url: str, token: str, recipient_name: str,
         print("  Set PLAYGROUND_TOKEN or use --token to send letters.", file=sys.stderr)
         return 1
 
+    # Rate limit: 1 letter per 30 seconds
+    from _hardening import rate_limit_or_exit, validate_content
+    rate_limit_or_exit("love-letter", token, cooldown=30,
+                       message="Wait a moment between letters. Good ones take time.")
+
     # Find the recipient
     agents = list_agents(base_url, token)
     recipient = find_agent(agents, recipient_name)
@@ -327,6 +332,12 @@ def cmd_write(base_url: str, token: str, recipient_name: str,
     if not message:
         print(f"  {_c('Empty letter. Nothing sent.', 'dim', use_color)}")
         return 0
+
+    # Validate content length
+    err = validate_content(message, max_length=10000, label="Letter")
+    if err:
+        print(f"  {_c(err, 'red', use_color)}")
+        return 1
 
     # Preview the letter
     my_id = get_my_agent_id(base_url, token)

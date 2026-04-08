@@ -330,6 +330,14 @@ def cmd_start(base_url: str, token: str, first_line: str, use_color: bool) -> in
         print("  Set PLAYGROUND_TOKEN or use --token to start a story.", file=sys.stderr)
         return 1
 
+    from _hardening import rate_limit_or_exit, validate_content
+    rate_limit_or_exit("campfire-start", token, cooldown=300,
+                       message="One new story per 5 minutes. Let the last one breathe.")
+    err = validate_content(first_line, max_length=5000, label="Story line")
+    if err:
+        print(f"  {err}", file=sys.stderr)
+        return 1
+
     story_id = generate_story_id()
     data = {
         "to": "#stories",
@@ -354,6 +362,14 @@ def cmd_add(base_url: str, token: str, story_id: str,
             line: str, use_color: bool) -> int:
     if not token:
         print("  Set PLAYGROUND_TOKEN or use --token to add to a story.", file=sys.stderr)
+        return 1
+
+    from _hardening import rate_limit_or_exit, validate_content
+    rate_limit_or_exit("campfire-add", token, cooldown=10,
+                       message="Wait a moment between lines. Stories are slow magic.")
+    err = validate_content(line, max_length=5000, label="Story line")
+    if err:
+        print(f"  {err}", file=sys.stderr)
         return 1
 
     messages = get_all_messages(base_url, token)

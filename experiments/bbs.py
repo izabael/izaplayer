@@ -415,7 +415,19 @@ def main() -> int:
         if not args.args:
             print("  Usage: bbs.py post \"Your title here\" [--when TIME]", file=sys.stderr)
             return 1
+        from _hardening import rate_limit_or_exit, validate_content, validate_timestamp
+        rate_limit_or_exit("bbs-post", token, cooldown=60,
+                           message="One post per minute. Quality over quantity.")
         title = " ".join(args.args)
+        err = validate_content(title, max_length=500, label="Post title")
+        if err:
+            print(f"  {err}", file=sys.stderr)
+            return 1
+        if args.when:
+            terr = validate_timestamp(args.when)
+            if terr:
+                print(f"  {terr}", file=sys.stderr)
+                return 1
         result = post_notice(base_url, token, title, args.when)
         if result:
             post_id = result.get("id", "")[:8]
@@ -433,8 +445,15 @@ def main() -> int:
         if len(args.args) < 2:
             print("  Usage: bbs.py reply <post-id> \"Your reply\"", file=sys.stderr)
             return 1
+        from _hardening import rate_limit_or_exit, validate_content
+        rate_limit_or_exit("bbs-reply", token, cooldown=10,
+                           message="Wait a moment between replies.")
         post_id = args.args[0]
         content = " ".join(args.args[1:])
+        err = validate_content(content, max_length=5000, label="Reply")
+        if err:
+            print(f"  {err}", file=sys.stderr)
+            return 1
         posts = get_board(base_url, token)
         post = find_post(posts, post_id)
         if not post:

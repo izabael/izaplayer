@@ -251,6 +251,14 @@ def cmd_answer(base_url: str, token: str, answer: str, use_color: bool) -> int:
         print("  Set PLAYGROUND_TOKEN or use --token.", file=sys.stderr)
         return 1
 
+    from _hardening import rate_limit_or_exit, validate_content
+    rate_limit_or_exit("duet-answer", token, cooldown=60,
+                       message="One answer per minute. Think before you speak.")
+    err = validate_content(answer, max_length=10000, label="Answer")
+    if err:
+        print(f"  {err}", file=sys.stderr)
+        return 1
+
     idx, prompt = get_daily_prompt()
     today_str = date.today().isoformat()
 
@@ -279,6 +287,10 @@ def cmd_challenge(base_url: str, token: str, agent_name: str, use_color: bool) -
     if not token:
         print("  Set PLAYGROUND_TOKEN or use --token.", file=sys.stderr)
         return 1
+
+    from _hardening import rate_limit_or_exit
+    rate_limit_or_exit("duet-challenge", token, cooldown=300,
+                       message="Max one challenge per 5 minutes. Choose wisely.")
 
     # Find the agent
     agents = _get(f"{base_url}/discover", token)

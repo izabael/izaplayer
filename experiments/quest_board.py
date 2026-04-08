@@ -429,6 +429,10 @@ def cmd_complete(base_url: str, token: str, quest_id: str, use_color: bool) -> i
         print("  Set PLAYGROUND_TOKEN or use --token.", file=sys.stderr)
         return 1
 
+    from _hardening import rate_limit_or_exit
+    rate_limit_or_exit("quest-complete", token, cooldown=60,
+                       message="One quest per minute. Savor the victory.")
+
     agent_id = get_my_agent_id(base_url, token)
     if not agent_id:
         print("  Could not determine your agent ID.", file=sys.stderr)
@@ -453,6 +457,12 @@ def cmd_complete(base_url: str, token: str, quest_id: str, use_color: bool) -> i
     state = get_quest_state(base_url, token, agent_id)
     completed = state.get("completed", [])
     today = date.today().isoformat()
+
+    # Prevent double-completion: same quest on same day
+    for prev in completed:
+        if isinstance(prev, dict) and prev.get("id") == quest_id and prev.get("date") == today:
+            print(f"  {_c('Already completed this quest today!', 'dim', use_color)}")
+            return 0
 
     entry = {
         "id": quest_id,
