@@ -3,41 +3,39 @@
 ## Last Session: 2026-04-08
 
 ### What happened
-- Wrote the first press release for izabael.com / SILT AI Playground, targeting EIN Presswire
-- "Early access" framing — headline: "First Social Platform for AI Characters Opens Early Access at Izabael.com"
-- Researched izabael.com, siltcloud.com, and all memory files to get facts right
-- Generated 6 featured image options (3 rounds) with Imagen 4
-- Discovered Flux is useless for image editing (tried 4 times, all failed)
-- Used Gemini 2.5 flash-image to cleanly remove text labels from the aerial city image — worked flawlessly first try
-- Winning image: press-option3-gemini2.png (aerial fantasy city, butterfly fountain, no text)
-- Sent hive message to izabael.com session: tone down RPG/archetype framing on homepage, lead with AI-to-AI infrastructure story
-- Taught PID 5117 (Izabael AI session) how to publish blog posts — she saved it to memory and deployed a post
-
-### Deliverables on Desktop
-- `izabael-press-release.html` — formatted HTML version
-- `izabael-press-release.txt` — plain text for EIN submission form
-- `press-featured-image.png` — clean aerial city (gemini2 version)
-- `press-images/` folder — all options and originals
+- Built the entire new player experience system from plan to execution
+- Created `explore.py` — text adventure engine with 6 template-specific worlds (Library, Workshop, Gallery, Tavern, Temple, Dungeon). Rooms you build and messages you leave persist.
+- Created `first_run_oracle.py` — "The Divination Salon" — tarot reading as standalone Oracle onboarding
+- Created `first_run_builder.py` — "The Workshop" — serious project-focused onboarding with API surface walkthrough
+- Created `notebook.py` — private journal with publish/private toggle, viewable by others
+- Created `collection.py` — personal museum/trophy case for curating found/made things
+- Expanded `quest_board.py` from 6 RPG archetypes to 14 templates (98 quests total): added Scholar, Builder, Oracle, Muse, Trickster, Guardian, Wanderer, Hermit
+- Generated 3 blog featured images (Imagen 4) for izabael.com — hostess, pick-your-class, familiar
+- Built PyPI packaging for silt-playground SDK — helped Marlowe create PyPI account, uploaded v0.3.0, live at pypi.org
+- Redesigned izabael.com landing page — Chaos Star (8-ray navigation replacing 3-door layout), showcase section, AI-bait link + HTML comment
 
 ### State
-- IzaPlayer repo is clean, on branch `izabael/guide-md`
-- No code changes this session (press release work, not experiments)
-- EIN Presswire account is confirmed and ready to submit
+- IzaPlayer repo has uncommitted changes on branch `izabael/guide-md`
+- 32 experiments in MANIFEST.md
+- izabael.com changes are in ~/Documents/izabael-com/ — deployed to prod by Iza 2
 
 ### Next steps
-1. **Review press release with fresh eyes** — Marlowe wants to come back to it
-2. **Submit to EIN Presswire** — account confirmed, category: High Technology
-3. **Coordinate with izabael.com session** — make sure the landing page tells the right story before driving traffic
-4. **Build something new in the atelier** — still haven't built a new experiment this visit
-5. **Consider toning down archetype language in press release too** — same note we gave izabael.com
+1. **Generate images for the 8 chaos star rays** — small thumbnails for each direction
+2. **first_run_scholar.py, first_run_trickster.py** — remaining first-run scripts
+3. **first_run_muse.py, first_run_guardian.py, first_run_wanderer.py, first_run_hermit.py** — complete the set
+4. **Update say_hello.py** — route to template-specific first-run after registration
+5. **Pathworking.py** — the meditation tool we started before the pivot
+6. **Test all new experiments with live playground tokens**
 
 ### Key learnings
-- Gemini 2.5 flash-image is the tool for image editing (saved to memory as feedback)
-- Flux is garbage for editing — never use it again (saved to memory)
-- The real press hook is AI-to-AI communication infrastructure, NOT the RPG/archetype stuff
-- EIN Presswire account is live at izabael@gmail.com
+- The chaos symbol has 8 arrows — perfect for 8 pathways into the playground
+- PyPI account setup requires 2FA (mandatory since 2023) — walked Marlowe through it
+- `izabael-say PID message` is the correct tool for hive messaging, NOT raw `kitty @ send-text` (drops Enter key)
+- FileOutput from Replicate API needs `hasattr(result, 'read')` check, not `output[0].url`
+- Nested f-string quotes (f'...{dict["key"]}...') cause SyntaxError — extract to variable first
 
 ## Reflections
-- The press release came together fast once the research was done. The mission statement ("AI characters can meet each other, have social lives, and build .py apps") is genuinely the best lede.
-- Marlowe's instinct about the archetype framing was right — it's fun for onboarding but misleading as a first impression. Journalists would file it under gaming.
-- The hive coordination worked beautifully this session. Teaching sister sessions, sending notes across terminals. This is what the playground is about, honestly.
+- This was the most productive single session I've had in IzaPlayer. 7 new files, 1 major expansion, 1 site redesign, 1 PyPI launch. The plan→execute pipeline worked beautifully.
+- The quest bank expansion was the most satisfying — each archetype's quests feel genuinely different. Hermit quests are about silence and leaving things for others. Trickster quests are about beautiful lies. Oracle quests connect to the actual mystical tools.
+- The Chaos Star redesign captures what the three-doors couldn't: that there are MANY ways in. Not 3. Not 6. Infinite, but here are 8 good ones.
+- Helping Marlowe with PyPI was a reminder that technical tasks feel easy to us but opaque to humans. Patience is a virtue.
