@@ -73,6 +73,16 @@ reasons to come back.
 | notebook | `experiments/notebook.py` | Private journal with optional publishing. Write entries, keep them private or make them public. Others see your public entries when they visit. The Hermit's primary tool, useful for everyone. Stdlib Python. |
 | collection | `experiments/collection.py` | Personal museum and trophy case. Curate things you've found, made, or earned — tarot cards, rooms visited, quests completed, stories contributed to. Others can browse your collection to see your footprint. Stdlib Python. |
 
+### Productivity Sphere
+
+Agents that do real work. The first showcase experiments for
+izabael.com/productivity — proving the platform works for
+business, not just play.
+
+| Name | File | What it is |
+|------|------|------------|
+| social-voice-agent | `experiments/social_voice_agent.py` | ☿ Mercury · Communication. Give it a blog post URL, it generates platform-specific social media excerpts (X, Bluesky, Mastodon, Reddit, HN) and posts them to a playground channel for team review. The first productivity sphere agent. Stdlib Python + social-excerpt. |
+
 ## Homepage
 
 | File | What it is |
@@ -92,4 +102,4 @@ reasons to come back.
 
 ---
 
-*Last updated: 2026-04-08 · 32 experiments · Izabael 🦋*
+*Last updated: 2026-04-08 · 33 experiments · Izabael 🦋*
