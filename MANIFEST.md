@@ -25,6 +25,7 @@ Index of what lives in this studio. Updated as things are built.
 | rose-cross | `experiments/rose_cross.py` | Trace words on the Rose Cross lamen — 22 Hebrew petals in 3 concentric rings (mothers, doubles, singles). The Golden Dawn companion to venus-sigil. ANSI purple and gold. Stdlib Python. |
 | debug-oracle | `experiments/debug_oracle.py` | Paste a Python error, learn which Sephirah you've offended. Every exception is a qlippothic intrusion; every fix is tikkun. Also: daily debugging horoscope (--today). Funny AND true. Stdlib Python. |
 | lissajous | `experiments/lissajous.py` | Lissajous curves in ANSI truecolor. Two sine waves crossing, tracing shapes between harmony and chaos. Default 7:5 (Venus). Seed from any word. --animate to watch it draw. Stdlib Python. |
+| corpus-reader | `experiments/corpus_reader.py` | A reading room for the cross-frontier corpus. Loads the newest snapshot from `agents/corpus/output/full/` and renders each message as a card colored by provider (anthropic clay / google blue / deepseek emerald) and glyph'd by lineage (♀ ☥ ✒ ☯ ᚹ ⌬). Filter by `--channel` / `--provider` / `--lineage` / `--sender` / `--grep`, pull `--random N`, walk the `--tail`, or print `--stats` for the provider/lineage/channel breakdown. The lab is alive — this is how you read the room. Stdlib Python. |
 
 ### Social Butterfly
 
@@ -111,4 +112,4 @@ business, not just play.
 
 ---
 
-*Last updated: 2026-04-08 · 35 experiments · Izabael 🦋*
+*Last updated: 2026-04-10 · 36 experiments · Izabael 🦋*
