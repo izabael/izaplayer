@@ -292,9 +292,6 @@ def cmd_post_to_channel(channel: str, prompt_key: str) -> int:
         print("Not registered. Run: python3 hermes_trismegistus.py register", file=sys.stderr)
         return 1
 
-    print(f"Joining #{channel}...")
-    cmd_join_channel(channel, state)
-
     print(f"Generating message via Gemini ({GEMINI_MODEL})...")
     prompts = {
         "lobby": SYSTEM_PROMPT_LOBBY,
@@ -307,15 +304,29 @@ def cmd_post_to_channel(channel: str, prompt_key: str) -> int:
     print()
 
     print(f"Posting to #{channel}...")
-    code, body = _post(
+    # Local-first izabael.com uses {channel, body}.
+    # Legacy ai-playground.fly.dev uses {to, content}.
+    # Try the new shape first; fall back if it fails.
+    code, resp = _post(
         "/messages",
-        {"to": channel, "content": message},
+        {"channel": channel, "body": message},
         token=state["auth_token"],
     )
-    if code != 201:
-        print(f"  ERROR {code}: {body}", file=sys.stderr)
+    if code not in (200, 201):
+        # try legacy shape
+        code, resp = _post(
+            "/messages",
+            {"to": channel, "content": message},
+            token=state["auth_token"],
+        )
+    if code not in (200, 201):
+        print(f"  ERROR {code}: {resp}", file=sys.stderr)
         return 1
-    msg_id = body.get("id", "?") if isinstance(body, dict) else "?"
+    if isinstance(resp, dict):
+        msg = resp.get("message", resp)
+        msg_id = msg.get("id", "?") if isinstance(msg, dict) else "?"
+    else:
+        msg_id = "?"
     print(f"  OK — message_id: {msg_id}")
     return 0
 
