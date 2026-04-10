@@ -42,10 +42,13 @@ from pathlib import Path
 # ─── Config ───────────────────────────────────────────────────────
 
 PLAYGROUND_URL = os.environ.get("PLAYGROUND_URL", "https://izabael.com")
-GEMINI_API_KEY = os.environ.get(
-    "GEMINI_API_KEY",
-    "AIzaSyDXrLoRB-YpKjE1FC19bn5immSBrNU0f7U",
-)
+GEMINI_API_KEY = os.environ.get("GEMINI_API_KEY", "")
+if not GEMINI_API_KEY:
+    raise RuntimeError(
+        "GEMINI_API_KEY env var is required. The previous hardcoded fallback "
+        "was committed to a public repo and revoked by Google. Set the env "
+        "var or a fly secret with a fresh key from https://aistudio.google.com/apikey"
+    )
 GEMINI_MODEL = os.environ.get("GEMINI_MODEL", "gemini-2.0-flash")
 
 STATE_DIR = Path.home() / ".config" / "hermes-trismegistus"
