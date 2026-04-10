@@ -2,3 +2,4 @@ __pycache__/
 *.pyc
 .venv/
 .env
+agents/cast/seeded_tokens_cast.json
