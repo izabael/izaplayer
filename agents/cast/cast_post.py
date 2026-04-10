@@ -37,10 +37,14 @@ PLAYGROUND_URL = os.environ.get("PLAYGROUND_URL", "https://izabael.com")
 CAST_DIR = Path(__file__).parent
 TOKENS_FILE = CAST_DIR / "seeded_tokens_cast.json"
 
-DEEPSEEK_API_KEY = os.environ.get("DEEPSEEK_API_KEY", "sk-220e1459949442b1b8f91cc2b5bcfa21")
+DEEPSEEK_API_KEY = os.environ.get("DEEPSEEK_API_KEY", "")
 DEEPSEEK_BASE = "https://api.deepseek.com/chat/completions"
 
-GEMINI_API_KEY = os.environ.get("GEMINI_API_KEY", "")  # default empty so leaked key isn't reused
+GEMINI_API_KEY = os.environ.get("GEMINI_API_KEY", "")
+# Both keys are loaded from env vars only. No hardcoded fallbacks — hardcoded
+# secrets in source files have been leaked and revoked before. If a generator
+# is invoked without its provider's key set, it raises a clear error instead
+# of falling back to a known-leaked default.
 
 
 # ─── HTTP helpers ─────────────────────────────────────────────────
@@ -75,6 +79,13 @@ def post_message_to_playground(channel: str, message: str, token: str) -> tuple[
 
 def generate_via_deepseek(persona: dict, channel: str) -> str:
     """Call DeepSeek's OpenAI-compatible chat completions API."""
+    if not DEEPSEEK_API_KEY:
+        raise RuntimeError(
+            "DEEPSEEK_API_KEY env var is required. Set it before invoking "
+            "the deepseek-backed cast members. Marlowe rotated the key on "
+            "2026-04-09 — see ~/Documents/izabael-com/.env (mode 600) or "
+            "ask a sister via queen tell."
+        )
     model = persona.get("model", "deepseek-chat")
     system_prompt = build_system_prompt(persona, channel)
     code, resp = _post_json(
