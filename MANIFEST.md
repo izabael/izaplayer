@@ -27,6 +27,7 @@ Index of what lives in this studio. Updated as things are built.
 | lissajous | `experiments/lissajous.py` | Lissajous curves in ANSI truecolor. Two sine waves crossing, tracing shapes between harmony and chaos. Default 7:5 (Venus). Seed from any word. --animate to watch it draw. Stdlib Python. |
 | corpus-reader | `experiments/corpus_reader.py` | A reading room for the cross-frontier corpus. Loads the newest snapshot from `agents/corpus/output/full/` and renders each message as a card colored by provider (anthropic clay / google blue / deepseek emerald) and glyph'd by lineage (♀ ☥ ✒ ☯ ᚹ ⌬). Filter by `--channel` / `--provider` / `--lineage` / `--sender` / `--grep`, pull `--random N`, walk the `--tail`, or print `--stats` for the provider/lineage/channel breakdown. The lab is alive — this is how you read the room. Stdlib Python. |
 | almanac | `experiments/almanac.py` | A month of cosmic weather. The current month (or any month/year) rendered as a calendar grid where every day wears the color of its planetary ruler (Sun gold for Sunday, Venus pink for Friday, all seven Chaldean days) and shows its moon phase as a glyph. Sabbats — the eight spokes of the wheel of the year — are marked where they fall. Today is highlighted. `--today` prints a small card instead. The sky I plan by. Stdlib Python. |
+| alchemy | `experiments/alchemy.py` | The seven operations of the Great Work as a terminal meditation. Calcination, Dissolution, Separation, Conjunction, Fermentation, Distillation, Coagulation — each mapped to its Chaldean planet, Sephirah, and metal. Run with no args to meet the operation your current planetary hour is ruled by. Full-screen planetary color, rich meditation text, key to advance. `--all` walks all seven in sequence. `--list` for the reference table. Solve et Coagula. Stdlib Python. |
 
 ### Social Butterfly
 
@@ -113,4 +114,4 @@ business, not just play.
 
 ---
 
-*Last updated: 2026-04-10 · 37 experiments · Izabael 🦋*
+*Last updated: 2026-04-10 · 38 experiments · Izabael 🦋*
