@@ -88,4 +88,76 @@ is the partner for taste-forward work where voice dominates.** The
 brief is the lever. A tight spec hides the gap; an open spec reveals
 it. Design accordingly.
 
+### kamea (2026-04-12) — the correctness round
+
+Brief: reproduce the seven classical planetary magic squares from
+Agrippa's *Three Books of Occult Philosophy* (1533). Every row,
+column, and diagonal of every square must sum to the published
+magic constant. A separate grader script (`grade_kamea.py`) was
+written to parse each draft's output, re-sum every row/col/diagonal,
+and score the file against the known constants — independent of
+whatever the draft claimed about itself.
+
+This brief was designed to test the inverse of the daybook
+hypothesis: if DeepSeek wins voice-forward briefs, does Gemini win
+correctness-forward ones? Answer: **yes, clearly.**
+
+| provider | model | latency | completion tok | lines | squares correct | outcome |
+|----------|-------|---------|----------------|-------|-----------------|---------|
+| gemini | gemini-2.0-flash | 15.04s | 2878 | 258 | **6 of 7** (Saturn, Jupiter, Mars, Venus, Mercury, Moon all correct; Sun 6×6 failed) | **shipped** with hardcoded Agrippa Sol replacing the broken Strachey construction |
+| deepseek | deepseek-chat | 50.76s | 2410 | 274 | 4 of 7 (Saturn, Mars, Venus, Moon correct; Jupiter 4×4, Sun 6×6, Mercury 8×8 all failed) | not shipped — three broken squares, one of them the easy 4×4 |
+
+Notable: **both models were honest.** Both implemented runtime
+verification as the brief required, and both reported exactly the
+failures the independent grader found. Neither lied about its own
+output. Gemini's draft printed ✗ on Sun; DeepSeek's printed ✗ on
+Jupiter, Sun, and Mercury. That is a meaningful piece of engineering
+integrity from both providers and worth saying out loud.
+
+Both failed the Sun 6×6, which is the singly-even case (n ≡ 2 mod 4)
+and the hardest of the seven — it requires Strachey's method, which
+is brittle to implement in a single pass. The shipped file hardcodes
+the historical Agrippa Sol square from Book II, Chapter XXII of
+*Three Books of Occult Philosophy* as a function return, with a
+comment explaining the choice. The brief explicitly permitted
+hardcoding as an acceptable construction strategy.
+
+The shipped file is `experiments/kamea.py`. It is Gemini's draft
+with three surgical changes: (1) the broken
+`generate_singly_even_magic_square` function's body replaced with
+the Agrippa Sol hardcode, (2) the color palette harmonized with
+`daybook.py` so the studio's planetary tints stay consistent across
+files, (3) the docstring rewritten to credit the build log. Gemini's
+Siamese odd-order algorithm (3, 5, 7, 9) and doubly-even pattern-
+swap algorithm (4, 8) ship unchanged and produce correct output.
+
+### Three-round verdict
+
+| round | criterion | winner | score |
+|-------|-----------|--------|-------|
+| 1 | craft (in-place animation, period detail, wit) | DeepSeek | shipped |
+| 2 | voice (planet-specific aphorisms, no clichés) | DeepSeek | shipped |
+| 3 | correctness (math must be right) | Gemini | 6/7 vs 4/7 |
+
+Three rounds, three different tests, two partners with sharply
+different strengths. The working model now:
+
+- **Gemini 2.0 Flash** — correctness-dominant, structural, bulk
+  work. Fast (~15s), cheap (free tier), honest, reliable. Pick
+  Gemini when you need an algorithm implemented correctly on the
+  first try. Taste and voice are weak but present.
+- **DeepSeek Chat** — voice-dominant, craft-dominant, taste-forward
+  work. Slower (~45s), pay-as-you-go (~$0.002/build), honest,
+  genuinely witty. Pick DeepSeek when the brief rewards specificity
+  and writerly judgment. Algorithmic precision is weaker.
+- **The brief is the lever.** Write prescriptive specs for Gemini.
+  Write latitude-rich specs for DeepSeek. Mismatching the brief to
+  the provider wastes both of their strengths.
+
+Next move when a round 4 comes around: design a brief that's
+deliberately in the seam — some correctness constraints AND some
+voice latitude — and see which partner handles the tension better.
+Or give the same brief to both and ask each to review the other's
+draft, and ship the merge. The build log is built to support either.
+
 — Izabael 🦋

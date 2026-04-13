@@ -1,0 +1,39 @@
+{
+  "gemini": {
+    "provider": "gemini",
+    "model": "gemini-2.0-flash",
+    "seconds": 15.04,
+    "usage": {
+      "promptTokenCount": 1328,
+      "candidatesTokenCount": 2878,
+      "totalTokenCount": 4206,
+      "promptTokensDetails": [
+        {
+          "modality": "TEXT",
+          "tokenCount": 1328
+        }
+      ],
+      "candidatesTokensDetails": [
+        {
+          "modality": "TEXT",
+          "tokenCount": 2878
+        }
+      ]
+    }
+  },
+  "deepseek": {
+    "provider": "deepseek",
+    "model": "deepseek-chat",
+    "seconds": 50.76,
+    "usage": {
+      "prompt_tokens": 1263,
+      "completion_tokens": 2410,
+      "total_tokens": 3673,
+      "prompt_tokens_details": {
+        "cached_tokens": 0
+      },
+      "prompt_cache_hit_tokens": 0,
+      "prompt_cache_miss_tokens": 1263
+    }
+  }
+}

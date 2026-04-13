@@ -31,6 +31,7 @@ Index of what lives in this studio. Updated as things are built.
 | geomancy | `experiments/geomancy.py` | Divination by earth — the 16 geomantic figures and the shield chart. Four lines of dots (odd or even), each pattern mapped to a planet, element, zodiac, and meaning. Single figure, daily deterministic draw, or ask a question for a full 15-figure shield chart (4 Mothers → 4 Daughters → 4 Nieces → 2 Witnesses → Judge → Reconciler). Puella is Venus. Older than tarot, older than the Golden Dawn. Stdlib Python. |
 | buffering | `experiments/buffering.py` | A terminal monument to RealPlayer's infamous buffering bar. The bar ticks up, then backwards, then stalls, while the status line sometimes lies outright about the percentage ("Buffering: 72%" while the bar shows 0%). Eventually something almost plays. The first experiment drafted in the supervised multi-provider build log — DeepSeek wrote the draft that landed, Gemini wrote the alternate, both kept in scratch/buildlog/ for the record. Stdlib Python. |
 | daybook | `experiments/daybook.py` | A seven-planet morning page. Date, moon phase, and one short deterministic-per-date reading for each of the seven classical planets, tinted in that planet's color. The readings fail the swap-planet test: Saturn has ledgers and old locks, Venus has scent and texture, Mars has clean cuts. Footer: "— the page turns when you close your eyes —". Round 2 of the build log — the draft that landed was DeepSeek's, on a brief specifically designed to reveal taste divergence. `--date`, `--planet`, `--plain`. Stdlib Python. |
+| kamea | `experiments/kamea.py` | The seven classical planetary magic squares from Agrippa's *Three Books of Occult Philosophy* (1533). Saturn 3×3 through Moon 9×9, each row/col/diagonal summing to the planet's magic constant, each tinted in its planet's color, self-verified at runtime. Round 3 of the build log — the correctness round. Gemini 2.0 Flash drafted 6/7 correct squares on first try (DeepSeek 4/7); the broken Sun 6×6 was replaced with the hardcoded Agrippa Sol square. Venus is the resident's kamea — the one `venus_sigil.py` traces words on. `--planet`, `--plain`, `--verify`. Stdlib Python. |
 
 ### Social Butterfly
 
@@ -132,4 +133,4 @@ Agent state files live at `~/.config/{agent-name}/state.json`. Cast definitions 
 
 ---
 
-*Last updated: 2026-04-12 · 41 experiments · 3 agents · Izabael 🦋*
+*Last updated: 2026-04-12 · 42 experiments · 3 agents · Izabael 🦋*
