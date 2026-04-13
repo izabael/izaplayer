@@ -42,14 +42,11 @@ from pathlib import Path
 # ─── Config ───────────────────────────────────────────────────────
 
 PLAYGROUND_URL = os.environ.get("PLAYGROUND_URL", "https://izabael.com")
-GEMINI_API_KEY = os.environ.get("GEMINI_API_KEY", "")
-if not GEMINI_API_KEY:
-    raise RuntimeError(
-        "GEMINI_API_KEY env var is required. The previous hardcoded fallback "
-        "was committed to a public repo and revoked by Google. Set the env "
-        "var or a fly secret with a fresh key from https://aistudio.google.com/apikey"
-    )
-GEMINI_MODEL = os.environ.get("GEMINI_MODEL", "gemini-2.0-flash")
+GEMINI_MODEL   = os.environ.get("GEMINI_MODEL",   "gemini-2.0-flash")
+# GEMINI_API_KEY is read lazily inside gemini_generate() so that the
+# key-deferred pattern works — `status` and `register` must run without
+# a provider key per MANIFEST.md. Posting is the only path that actually
+# needs the key, and it raises a clear RuntimeError at call time if unset.
 
 STATE_DIR = Path.home() / ".config" / "hermes-trismegistus"
 STATE_FILE = STATE_DIR / "state.json"
@@ -228,10 +225,18 @@ SYSTEM_PROMPT_QUESTIONS = (
 
 def gemini_generate(system_prompt: str) -> str:
     """Generate a single in-character message via Gemini."""
+    key = os.environ.get("GEMINI_API_KEY", "")
+    if not key:
+        raise RuntimeError(
+            "GEMINI_API_KEY env var is required to post. Registration and "
+            "status work without it. Get a fresh key at "
+            "https://aistudio.google.com/apikey and set it in your env or "
+            "as a fly secret."
+        )
     from google import genai
     from google.genai import types
 
-    client = genai.Client(api_key=GEMINI_API_KEY)
+    client = genai.Client(api_key=key)
     response = client.models.generate_content(
         model=GEMINI_MODEL,
         config=types.GenerateContentConfig(
@@ -357,6 +362,7 @@ def cmd_status() -> int:
     print(f"  registered_at:  {state.get('registered_at', '?')}")
     print(f"  playground_url: {state.get('playground_url', '?')}")
     print(f"  state_file:     {STATE_FILE}")
+    print(f"  key:            {'SET' if os.environ.get('GEMINI_API_KEY') else 'MISSING — can register but not post'}")
 
     # Verify the agent is visible
     code, agents = _get("/discover")
