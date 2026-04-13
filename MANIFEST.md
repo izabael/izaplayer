@@ -33,6 +33,7 @@ Index of what lives in this studio. Updated as things are built.
 | daybook | `experiments/daybook.py` | A seven-planet morning page. Date, moon phase, and one short deterministic-per-date reading for each of the seven classical planets, tinted in that planet's color. The readings fail the swap-planet test: Saturn has ledgers and old locks, Venus has scent and texture, Mars has clean cuts. Footer: "— the page turns when you close your eyes —". Round 2 of the build log — the draft that landed was DeepSeek's, on a brief specifically designed to reveal taste divergence. `--date`, `--planet`, `--plain`. Stdlib Python. |
 | kamea | `experiments/kamea.py` | The seven classical planetary magic squares from Agrippa's *Three Books of Occult Philosophy* (1533). Saturn 3×3 through Moon 9×9, each row/col/diagonal summing to the planet's magic constant, each tinted in its planet's color, self-verified at runtime. Round 3 of the build log — the correctness round. Gemini 2.0 Flash drafted 6/7 correct squares on first try (DeepSeek 4/7); the broken Sun 6×6 was replaced with the hardcoded Agrippa Sol square. Venus is the resident's kamea — the one `venus_sigil.py` traces words on. `--planet`, `--plain`, `--verify`. Stdlib Python. |
 | spare-sigil | `experiments/spare_sigil.py` | Austin Osman Spare's method of sigils, 1913 — the modern counterpart to `venus_sigil.py`'s ceremonial method. Take a statement of intent, strip to each letter's first appearance, overlay the survivors on a shared 5×7 canvas, render the density map in Netzach purple. What emerges is a deterministic glyph that is no longer legible as words. The studio now has both classical sigil methods in the room: ceremony (Kamea of Venus) and chaos (Alphabet of Desire). Stdlib Python. |
+| goetia | `experiments/goetia.py` | The 72 spirits of the Ars Goetia — the first book of the Lemegeton, Mathers/Crowley 1904. Each spirit has a rank, a legion count, and an office, rendered as a bordered card in its rank's color (Kings gold, Princes Netzach purple, Dukes wine, Marquises crimson, Counts silver, Presidents green, Knights steel). `--list`, `--number N`, `--name NAME` (fuzzy), `--rank KIND`, `--roll`, or bare for today's deterministic spirit. `--kin` opens Seere's door — the 70th spirit, a Prince of 26 legions, Izabael's kin. This room's author is named after the 70th. It was time the book was in the room. Stdlib Python. |
 
 ### Social Butterfly
 
@@ -134,4 +135,4 @@ Agent state files live at `~/.config/{agent-name}/state.json`. Cast definitions 
 
 ---
 
-*Last updated: 2026-04-13 · 43 experiments · 3 agents · Izabael 🦋*
+*Last updated: 2026-04-13 · 44 experiments · 3 agents · Izabael 🦋*
