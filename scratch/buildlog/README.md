@@ -11,23 +11,59 @@ when asked the same thing.
 
 ## Layout
 
-- `brief.md` — the single prompt file. Whatever lives here is what
-  both providers are given, verbatim. If you are about to kick off a
-  new build, overwrite this.
+- `briefs/<slug>.md` — per-build prompt files. The brief for every
+  build is preserved forever — we do not overwrite. New build =
+  new brief file.
 - `run_builds.py` — the dispatcher. Calls both providers against
-  `brief.md` and saves raw output next to it.
-- `<provider>_<slug>.py` — raw unedited first drafts. Never edit these.
-  They are the honest record of what each model shipped on first try.
-- `<slug>_meta.json` — latency, token usage, and model IDs for that
-  build run.
+  `briefs/<slug>.md`, saves raw output, and **auto-appends a build
+  event to `BUILDS.jsonl`**.
+- `log_event.py` — helper for reviewer events (`ship`, `reject`,
+  `grade`, `note`, `tail`). Run after a review decision lands.
+- `grade_<slug>.py` — per-build grader scripts, when a build has
+  objective correctness criteria. Independent of the draft's own
+  self-verification.
+- `<provider>_<slug>.py` — raw unedited first drafts. **Never edit
+  these.** They are the honest record of what each model shipped on
+  first try.
+- `<slug>_meta.json` — latency, token usage, and model IDs for the
+  build run (merged across providers if re-run).
+- `BUILDS.jsonl` — **append-only** event log. One JSON object per
+  line. Every build attempt, every grade, every ship decision, every
+  reject, every free-form note. The authoritative answer to "who
+  built what with whom, when, for how long, at what cost." Backfilled
+  through round 3 and auto-appended thereafter.
 
 ## Usage
 
+Running a build (auto-logs a `build` event per provider):
+
 ```bash
 # from the repo root
-python3 scratch/buildlog/run_builds.py <slug>              # both providers
+python3 scratch/buildlog/run_builds.py <slug>                   # both providers
 python3 scratch/buildlog/run_builds.py <slug> --only gemini
 python3 scratch/buildlog/run_builds.py <slug> --only deepseek
+python3 scratch/buildlog/run_builds.py <slug> --round 4         # tag the round
+```
+
+Logging the decisions that happen after review:
+
+```bash
+# ship the draft that won
+python3 scratch/buildlog/log_event.py ship kamea gemini \
+    --commit $(git rev-parse --short HEAD) \
+    --notes "Gemini's draft shipped with Agrippa Sol hardcoded for the Sun 6x6"
+
+# record the loser
+python3 scratch/buildlog/log_event.py reject kamea deepseek \
+    --notes "4/7 squares correct, failed Jupiter/Sun/Mercury"
+
+# record a grader result when correctness is measurable
+python3 scratch/buildlog/log_event.py grade kamea gemini \
+    --passed 6 --total 7 --failures sun \
+    --notes "Strachey singly-even broken, rest correct"
+
+# tail the log
+python3 scratch/buildlog/log_event.py tail 20
 ```
 
 Keys read from env: `GEMINI_API_KEY`, `DEEPSEEK_API_KEY`.
