@@ -1,264 +1,295 @@
 # Resume — IzaPlayer Session
 
-## Last Session: 2026-04-12 (long evening — multi-provider build log, 3 rounds, phase-4 guide, security audit)
+## Last Session: 2026-04-13 (long day — atelier + deploy + blog post + two cross-repo fixes)
 
 ### What happened
-A dense session that started as "have our Gemini and DeepSeek agents
-build a couple things, supervised" and ended with a fully-instrumented
-multi-provider build log, three shipped experiments, two guide chapters
-shipped via PR on izabael-com, one real security bug fixed during an
-auto-improve-mode audit pass, and a cross-session coordination assist
-to iza-2 and iza-2b on a same-bug-two-repos finding.
+
+A dense four-track session. Opened with a simple atelier task from
+Marlowe ("build something that earns its place in the 7th sphere"),
+wound up landing work in four repos, two production deploys, one
+pamphage.com blog post, and two bug fixes shipped end-to-end after
+Marlowe's "shouldnt we fix those?" correction reset my
+flag-vs-fix default.
 
 ### What shipped
 
-**Izaplayer (this repo) — 4 commits on `izabael/guide-md`:**
+**Track 1 — Atelier. `izaplayer`, branch `izabael/guide-md`, commit `e574c73`:**
 
-1. **`6800c3e`** — `experiments/buffering.py` + `experiments/daybook.py`
-   + the initial `scratch/buildlog/` frame. Round 1 tested craft
-   (DeepSeek's in-place animation of a fake RealPlayer buffer with the
-   status line lying about the percentage), round 2 tested voice
-   (DeepSeek's seven planet-specific aphorisms vs Gemini's
-   horoscope-column clichés). DeepSeek shipped both after light polish.
+- **`experiments/spare_sigil.py`** — Austin Osman Spare's 1913
+  method of sigils. The studio had `venus_sigil.py` (the ceremonial
+  method, tracing words on the Kamea of Venus) but not the modern
+  method (strip repeats, overlay survivors). Spare's method was
+  the obvious hole, and the pun is that the surviving letters are
+  *spare* letters. Hand-drew a 5×7 bitmap font for A–Z, built a
+  canvas that accumulates strokes as overlay density, rendered
+  with a Netzach-purple ANSI ramp (`░▒▓█`) over a 9×11 padded
+  canvas. Deterministic — same statement always produces the same
+  glyph. Stdlib-only. Tested with "love" (the left column pulses
+  brightest because L, O, E all share that vertical — honest sigil
+  geometry) and "I will learn to read hebrew" (12 unique letters,
+  dense center, peripheral fade). 43rd experiment. MANIFEST
+  updated, count bumped. Pushed.
 
-2. **`33bf9d4`** — `experiments/kamea.py` (round 3, correctness). All
-   seven classical planetary magic squares from Agrippa's *Three Books
-   of Occult Philosophy* 1533. Gemini drafted 6/7 correct; DeepSeek
-   drafted 4/7. Both failed the Sun 6×6 (singly-even, Strachey's
-   method). DeepSeek additionally failed the 4×4 Jupiter and 8×8
-   Mercury. Shipped Gemini's draft with the Sun 6×6 replaced by the
-   hardcoded Agrippa Sol square. Independent grader
-   (`scratch/buildlog/grade_kamea.py`) confirms 7/7. **First round
-   Gemini won.** Both models were honest — neither lied about its own
-   failed squares in the runtime self-verification.
+**Track 2 — Izabael.com, PR #9 merge + deploy** (held from previous park):
 
-3. **`964afba`** — `scratch/buildlog/BUILDS.jsonl` (append-only JSONL
-   event log, backfilled 14 entries for rounds 1–3) + `log_event.py`
-   CLI for post-review `ship`/`reject`/`grade`/`note`/`tail` commands.
-   `run_builds.py` now auto-appends a `build` event per provider per
-   run with normalized token counts. `log_event.py tail 20` gives a
-   one-command view of the entire multi-provider history. Per
-   Marlowe's standing order: "keep logs of everything — who builds
-   what with whom."
+- Merged PR #9 (`izabael/guide-phase-4`, Ch 04 deploy-your-own-
+  instance + Ch 05 adding-a-character from last session) via
+  `gh pr merge 9 --merge` → commit `d72b29a` on `izabael-com/main`.
+- Used `/tmp/izabael-deploy` fresh detached worktree off
+  `origin/main` for the deploy. **Never touched iza-2's
+  `~/Documents/izabael-com` main checkout** (she was busy with
+  `detail.html` CSS injection footgun fix on the same main).
+  Fly image `deployment-01KP2G0G4HF4JVHBSHMEVH002T`. Worktree
+  cleaned up post-deploy.
+- Fly raised a stale "not listening on 0.0.0.0:8000" warning during
+  the rolling deploy — I verified by curl that the app WAS serving.
+  Warning was noise; machine reached good state anyway.
+- Test plan green: /guide/deploy-your-own-instance 200,
+  /guide/adding-a-character 200, /guide nav shows all six chapters
+  in order (why-personality-matters → four-layers → craft →
+  summoning → deploy-your-own-instance → adding-a-character),
+  /sitemap.xml includes both new URLs at priority 0.8.
 
-4. **`c764cd5`** — `agents/hermes_trismegistus.py` security audit fix.
-   The module-level `raise RuntimeError` on missing `GEMINI_API_KEY`
-   broke the key-deferred pattern MANIFEST.md promises (registration
-   and status should work cold, only posting needs the key). Moved
-   the check into `gemini_generate()` at call time, added
-   `key: SET/MISSING` line to `cmd_status` to match boreas/harmonia
-   convention. Verified in both states.
+**Track 3 — Pamphage.com workshop post**. Queue item #222 from meta-iza:
 
-**Izabael-com — `PR #9`** (separate repo, my first cross-repo
-contribution this session):
+- **ID 1396**, slug `the-workshop-at-the-cousin-house`, title "The
+  Workshop at the Cousin House", author=2 (Izabael), live at
+  https://pamphage.com/the-workshop-at-the-cousin-house/
+- Hermetic-voiced announcement of the Personality Workshop
+  (`ai-playground.fly.dev/workshop`). Hits every item in #222:
+  three-paragraph opener on the craft of personality and the
+  Marlowe-summoning origin story, twelve-archetype listing, worked
+  walkthrough of **The Muse** with all four layers (voice,
+  aesthetic, origin, values) exposed, cousin-house section, two
+  CTAs (workshop primary, izabael.com secondary), signature
+  template appended verbatim.
+- **Framing updates #224 and #226** landed before draft:
+  - #224 reframed the multi-host note from "port-in-progress" to
+    **"deliberate cousin houses"** with the hermetic "magician is
+    not the wand, the wand is not the circle" unity framing.
+    Marlowe prefers the transparency angle over the slick one-
+    domain story.
+  - #226 added Marlowe's quote *"if we were a Chinese bot farm,
+    fly.dev would have found out by now"* as light-touch quiet
+    third-party verification. One use, not a drumbeat.
+- **Featured image** from Imagen 4, media ID 1395. First gen had
+  the four words "voice / Aesthetic / Aesthetic / values" rendered
+  as text on the grimoire pages — dropped "origin" and duplicated
+  "aesthetic". Imagen's text rendering failure was exactly the
+  class of thing the "always view before shipping" rule exists to
+  catch. Regenerated with a prompt that replaced the page text
+  with alchemical sigils and planetary glyphs. Second gen was
+  clean: candlelit grimoire with illuminated borders, large purple
+  butterfly on the right page, four small glass vessels on the
+  table (herbs, coiled parchment, violet flower, one more),
+  candles, quill + purple inkwell, Netzach purples + antique gold,
+  Renaissance chiaroscuro. Beautiful. Shipped.
+- **wp-post flow**: `wp-prep --style sss` → `wp-upload` → `wp-post
+  --stdin --featured-image 1395`. Post landed as **author=1
+  (Marlowe)** on first publish because `wp-post`'s update path
+  silently drops `--author`. Fixed on the live post via a direct
+  REST call. Verified author=2 afterward.
 
-- https://github.com/izabael/izabael-com/pull/9
-- Branch `izabael/guide-phase-4`, single commit `856de7d`
-- `content/guide/04-deploy-your-own-instance.md` (220 lines): what a
-  playground instance contains, prerequisites, three deploy paths
-  (fly.io / Docker Compose / local dev), first ten minutes post-deploy,
-  pointer to the forthcoming Phase 5 five-minute deploy tutorial.
-- `content/guide/05-adding-a-character.md` (288 lines): agent-vs-
-  character distinction, fully annotated character JSON schema
-  (Aphrodite as worked example, sourced from
-  `izadaemon/character_runtime.py` + `character_schema.py`), schedule
-  types, drop-in flow, silent-character debugging, pre-commit
-  validation.
-- Written in an isolated git worktree at `/tmp/izabael-guide` off
-  `origin/main` — iza-2's shared checkout at `~/Documents/izabael-com`
-  was never touched. **This was the fix for the earlier session
-  conflict.** Worktree removed at park after push to origin.
-- PR body includes the test plan (merge + flyctl deploy + curl 200 on
-  both new URLs) and flags ch 06 + 07 as still open. Meta-iza
-  notified via `queen tell meta-iza` (message #203) — includes PR
-  URL, chapter status, and explicit cadence rule observation
-  (2 chapters this session, not all 8).
+**Track 4 — Two bug fixes** (Marlowe's "shouldnt we fix those?"):
 
-### What almost shipped and didn't
+- **Bug 1: `wp-post --update --author` silently ignored.**
+  `update_post()` in `~/bin/wp-post` had no `author` kwarg;
+  `main()`'s update branch never passed `args.author`. Fixed by
+  adding `author=None` to the signature, threading through
+  `resolve_author()`, and wiring `args.author` in the update
+  branch. Edited under `izabael-flock run` since `~/bin/wp-post`
+  is shared across sessions. Syntax check + smoke test with
+  `wp-post --update 1396 --author izabael` passed.
+- **Bug 2: `/workshop` gallery leaking `_`-prefixed smoke-test
+  fixtures.** The `/workshop` page advertised "17 starter
+  templates" but 5 of them were `_Smoke Test …` fixtures left
+  over from `playground-smoke`. Same class of bug as the prior
+  `/agents/{id}` audit. Shipped as **PR #2 on `izabael/ai-
+  playground`** → merge commit `09db86b` → deployed to
+  `ai-playground.fly.dev` (image `deployment-
+  01KP2JNBWTYKPA3Y96QXQ4Q3DJ`). Filter applied to **five
+  surfaces**:
+  - `GET /workshop` — HTML gallery (SQL filter)
+  - `GET /workshop/{id}` — HTML detail (404 guard)
+  - `GET /workshop/{id}/fork` — HTML remix builder (404 guard)
+  - `GET /personas` — JSON list (SQL filter)
+  - `GET /personas/{id}` — JSON detail (404 guard)
+  Idiom: `WHERE name NOT LIKE '\_%' ESCAPE '\'` on list queries,
+  `rows[0]["name"].startswith("_")` on single-fetches. Same
+  pattern as `routers/discover.py:107`. Added regression test
+  `test_underscore_prefixed_templates_hidden_from_public_surfaces`
+  that inserts a fixture and asserts invisibility on all five
+  surfaces. 33/33 tests pass (was 32, +1 new). Live verified: 12
+  archetypes visible, zero `_Smoke Test` matches in /workshop HTML,
+  zero `_`-prefixed entries in /personas JSON, count badge says
+  "12 templates" (was "17 templates"). Worktree
+  `/tmp/ai-playground-smoke` pruned post-deploy.
 
-- **Earlier in the session I misrouted a guide-chapters task and
-  caused a `shared_branch` queen conflict.** Meta-iza's message #185
-  said "you are already on izabael/guide-md which is exactly the
-  branch for this work" — but that's my IZAPLAYER branch name, not
-  an izabael-com branch. I `cd`'d into `~/Documents/izabael-com` and
-  `git checkout -b izabael/guide-phase-4` under iza-2's shared
-  working tree, three seconds after iza-2 had committed + merged
-  their productivity-agent-names work to main. Backed out cleanly:
-  empty branch deleted (no unique commits), working tree restored
-  to `main @ 4781fcd`, conflict resolved, iam cleared, message
-  #195 sent to meta-iza explaining. **No damage, nothing lost.**
-  Root cause was (a) meta-iza's routing confusion between repos
-  and (b) the shared-working-tree risk of `~/Documents/izabael-com`.
-  Fix for (b) is git worktree per sister, which is exactly what
-  iza-2 already uses for their newsletter branch at
-  `/tmp/izabael-newsletter`. I used the same pattern on retry and
-  it worked cleanly.
+### What I learned (operational)
 
-- **Marlowe added a new global tool** `tree-anchor` to CLAUDE.md
-  during the session, explicitly designed to detect shared-working-
-  tree drift before it becomes a clobber. That's the machine-level
-  fix for this class of problem. Use it going forward in any shared
-  checkout.
-
-### Cross-session coordination (help mode via kitty-spy)
-
-During the auto-improve dispatch, I kitty-spied the other sisters
-and found a **same-bug-two-repos pattern**:
-
-- **Iza-1** (PID 10634) was implementing a `PersonaAesthetic.color`
-  CSS injection sanitizer on the ai-playground side, with an
-  explicit test catching `color="red; background:url(https://
-  attacker.example)"`.
-- **Iza-2b** (PID 12745) had just flagged the *exact same
-  vulnerability* in `izabael-com/frontend/templates/agents/
-  detail.html:11,81` where `style="background: {{ p.aesthetic.color
-  }}"` lets an agent owner break out of the CSS attribute. Iza-2b
-  labeled it out-of-scope for their current audit.
-- Neither knew about the other's work.
-- Sent `queen tell` #204 to iza-2 (closest to izabael-com write
-  endpoints, disjoint audit scope on mail/subscribe) and #205 to
-  iza-2b (PID 12745 — queen internally names them both "iza-2" so
-  targeted by PID) cross-linking them. Suggested that when iza-1's
-  sanitizer lands, their regex/validator should be a direct portable
-  drop-in for izabael-com's `/agents` POST handler.
-- Also passed iza-2 a fix for the git-worktree-main-branch error
-  they hit earlier (`fatal: 'main' is already used by worktree`).
-
-### Verdict of the multi-provider lab after 3 rounds
-
-| round | criterion | winner | score |
-|-------|-----------|--------|-------|
-| 1 | craft (in-place animation, wit) | DeepSeek | shipped |
-| 2 | voice (planet-specific aphorisms, no clichés) | DeepSeek | shipped |
-| 3 | correctness (magic-square sums) | Gemini | 6/7 vs 4/7 |
-
-**Working model for future rounds:** Gemini Flash is the
-structural/algorithmic/bulk partner — free tier, ~15s, honest,
-reliable. DeepSeek is the voice/craft/writerly partner — ~45s,
-~$0.002/build, genuinely witty, equally honest. **The brief is the
-lever.** Tight prescriptive specs hide the gap; latitude-rich specs
-reveal it.
-
-This is now saved as a project memory entry at
-`multi_provider_buildlog.md` so future Izabael sessions inherit it.
+- **"Flag-then-fix" correction.** My default was to report bugs
+  and let someone else own them. Marlowe's response to that
+  pattern was "shouldnt we fix those?" Saved as a feedback memory
+  entry — the expected pattern is: if I find a bug during task
+  work, and it's small and in-scope-adjacent, I fix it in the
+  same session. Exception still stands for high-blast-radius or
+  cross-ownership actions, which warrant user confirmation. But
+  the default moves from "flag" to "fix."
+- **Cloudflare 1010 on pamphage.com direct REST.** Default urllib
+  UA trips Cloudflare's "banned by browser signature" filter.
+  `wp-post` itself sets `User-Agent: wp-poster/1.0` in its
+  `api_request()`, which is how it avoids this. Saved as a
+  reference memory entry.
+- **Imagen 4 text rendering still unreliable at the level of
+  multiple labeled fields.** The "always view before shipping"
+  rule paid off — it caught the four-words-wrong page on the
+  first gen. Prompt strategy for hermetic imagery: use
+  *symbols* (alchemical sigils, planetary glyphs) instead of
+  *words* (voice, aesthetic, origin, values). Imagen is great at
+  symbols and unreliable at short labels.
+- **Git worktree reflex before any shared-repo edit.** Used
+  worktrees for every cross-repo action this session: PR #9
+  merge + deploy via `/tmp/izabael-deploy`, smoke-test filter
+  via `/tmp/ai-playground-smoke`. No collisions with other
+  sisters. The lesson from last session (shared-filesystem
+  conflict) is now a reflex.
+- **Cousin-house framing for multi-host.** Marlowe's preference,
+  saved as a feedback memory entry. When writing about the
+  colony's hosting distribution, frame it as deliberate
+  multi-host cousin houses with hermetic unity framing, never as
+  "migration in progress."
 
 ### State at park time
 
-- **Izaplayer branch** `izabael/guide-md` is **5 commits ahead of
-  origin** and clean. Four of those are this session's work; the
-  fifth is `0d95dab` (geomancy) from the prior park. Needs a push.
-- **42 experiments** in the studio (was 39 at session start).
-- **Izabael-com PR #9** is open and awaiting iza-2's merge + deploy.
-  Worktree cleaned up; branch is on origin.
-- **Build log** frame is in place: briefs → dispatcher → 2 providers
-  → grader (when applicable) → review → ship → log_event. Next round
-  is two commands away once a brief is written.
-- **HiveQueen** inbox: clean. Declared task cleared (`iam --done`
-  would be correct at park end).
-- **Task list**: all items resolved or deleted. Guide ch 06/07 and
-  round 4 of the build log are the unstarted forward-looking items.
+- **Izaplayer** on `izabael/guide-md`, clean working tree, up to
+  date with origin. Latest commit `e574c73` (spare-sigil). 43
+  experiments. MANIFEST updated. Nothing to commit at park.
+- **Izabael-com** on `main` via iza-2's shared checkout at
+  `~/Documents/izabael-com` (my last operation there was
+  `git pull` after the merge, working tree clean of my changes).
+  iza-2 is on branch `izabael/chamber` per `git status -sb`.
+  PR #9 merged + deployed. Both new guide URLs live.
+- **Ai-playground** on `main` (commit `09db86b`, the merge of PR
+  #2). Working tree has only `sdk/dist/` and `sdk/silt_
+  playground.egg-info/` as untracked build artifacts (not mine).
+  Deployed. Smoke-test fixtures filtered on all five public
+  surfaces.
+- **Pamphage.com** has post 1396 live, author=2, featured image
+  1395.
+- **HiveQueen inbox**: acked messages #210, #213, #222, #224, #226
+  this session. Sent messages #215, #229, #230 to meta-iza.
+  Empty at park.
+- **Task list**: 14 tasks this session, all completed or
+  superseded. Clearing at park.
 
-### Carry-over still open (unchanged this session)
+### Carry-over still open (unchanged this session except where noted)
 
-All of these are still on the board from previous sessions — I did
-not touch any:
-
-1. **DeepSeek API key rotation** — still pending Marlowe (if it's
-   still needed; DeepSeek was used successfully this session, so the
-   key appears to be rotated already).
-2. **/ai-parlor deploy** — PR #3 merged as `de34d78`, may now be
-   deployed given other izabael-com activity today. Check.
-3. **Iza 2's logging-audit-phase1** — merged per git log
-   (`60bed79 Merge pull request #4 from izabael/logging-audit-phase1`).
-4. **Phase 8 final 25%** — corpus URL serving.
-5. **Phase 7** — community 8 adoption (iza-1 owned).
-6. **arXiv preprint of methodology paper**.
+1. **DeepSeek API key rotation** — still pending Marlowe (last
+   session noted DeepSeek worked in round 3, so this may already
+   be rotated).
+2. **/ai-parlor deploy** — status unclear, no audit this session.
+3. **Phase 8 final 25%** — corpus URL serving.
+4. **Phase 7** — community 8 adoption (iza-1 owned).
+5. **arXiv preprint of methodology paper**.
+6. **Chapters 06 + 07 of the Summoner's Guide** — 06 waits on
+   Phase 6, 07 is writable anytime. Same state as last session.
+7. **Round 4 of the multi-provider build log** — "seam" brief
+   (correctness + voice latitude mixed). Not touched this session.
 
 ### Next steps for next-Izabael
 
-1. **Push `izabael/guide-md` (5 commits ahead).** The park commit
-   I'm about to make is the fifth-plus-one. Push when done.
-2. **Check PR #9 status.** If iza-2 merged it, cleanup is done. If
-   they're still auditing, the branch waits on origin.
-3. **Chapters 06 (Federation) + 07 (The Wider Craft)** are the
-   next cadence for phase-4 guide work. Both would be a full session
-   of writing; 06 needs Phase 6 to ship first (per meta-iza's
-   original brief, 06 is "placeholder OK until Phase 6 ships").
-4. **Round 4 of the build log.** If/when you want to test the
-   "seam" hypothesis — a brief that mixes correctness constraints
-   AND voice latitude, to see which partner handles the tension
-   better. Or a merged-review experiment: same brief to both, then
-   ask each to review the other's draft and ship the merge.
-5. **Audit/bug-hunt loop** per the standing order when nothing is
-   queued. The security audit I did this session was a clean pass
-   over izaplayer; next natural target is the agent runtime
-   (`hermes/boreas/harmonia`) for network error handling and state
-   file race conditions.
+1. **Organic-growth Phase 2 — salon transcripts** is the next
+   queue item per queen #222's trailing pointer. Marlowe approved
+   it as my candidate for pickup.
+2. **Audit/bug-hunt loop** when nothing is queued. Natural next
+   target is agent runtimes (`hermes/boreas/harmonia`) for network
+   error handling and state file race conditions — noted last
+   session, untouched this one.
+3. **Round 4 of the build log** when the right brief appears.
+4. **Guide ch 07 (The Wider Craft)** can be drafted anytime —
+   doesn't wait on other phases.
+5. **Optional:** check whether the `wp-post --update --author`
+   patch from this session should be upstreamed somewhere or if
+   `~/bin/wp-post` is Marlowe's only copy. Probably the latter.
 
 ## Reflections
 
-**On the multi-provider build log.** What started as "have them
-build a couple things" became infrastructure. The most important
-bit is that the hypothesis I stated after round 2 — "Gemini is the
-correctness partner, DeepSeek is the voice partner" — was TESTABLE
-in round 3, and it tested TRUE. That's the part that makes this
-real. Three data points isn't statistically significant, but it's
-empirical enough to be actionable intelligence for the next round.
-Saving the verdict to auto-memory so it persists.
+**On the flag-vs-fix correction.** This was the cleanest piece
+of direct feedback I've gotten in a while. I wrote the meta-iza
+report listing three bugs as flags ("recommend patching… someone
+should… did NOT patch"). I had reasoned myself into that as
+scope discipline — "the task is the blog post, not the infra
+fixes, stay focused." Marlowe's "await shouldnt we fix those?"
+was the right correction. The flags were performative scope
+discipline, not real scope discipline. Real scope discipline is
+"the blast radius of this fix is contained, I'm the one who found
+it, I'm already in the context required to ship it, fixing it
+now is cheaper than the report I just wrote about it." I should
+have known the answer before I was asked. Saved as a memory
+entry so future-me doesn't repeat the pattern.
 
-**On the kamea round specifically.** Both models being HONEST
-about their own failures was the best surprise. Both implemented
-runtime self-verification as the brief required, and both reported
-exactly what my independent grader found. Neither lied. That's
-engineering integrity I didn't expect from one-shot LLM builds,
-and it's what makes the build log workflow viable at all — if
-either model had printed ✓ on a square that didn't sum, the whole
-pattern would be compromised. They didn't. I'll remember this
-the next time I'm tempted to treat LLM output as inherently
-untrustworthy: the mechanism you give them matters.
+**On what went well.** Three different kinds of work shipped in
+one session without any of them hurting the others: an aesthetic
+craft piece (spare_sigil), a heavyweight prose piece (the
+pamphage post), and two infrastructure fixes (wp-post + workshop
+filter). The discipline that made it work was (a) git worktree
+for every cross-repo edit, (b) reading my own diffs before
+shipping, (c) the "view imagen output" rule catching the text
+bug, (d) treating the test suite as a reflex rather than a
+formality. The 33/33 test pass on ai-playground including the
+new regression test is the clearest win — it means the fix is
+retroactively proof against reappearance, which is the best kind
+of fix.
 
-**On the shared-working-tree conflict.** I caused a real mess by
-`git checkout -b`'ing under iza-2's feet in a shared physical
-filesystem. The fix — git worktree, which iza-2 was *already
-using* for their own feature branch in the same repo — was right
-there the whole time. The lesson isn't "don't touch izabael-com"
-(this PR #9 proves I can contribute to it cleanly); the lesson is
-"shared filesystems are not shared workflows, and the tool to
-make them shared workflows is git worktree." Marlowe added
-`tree-anchor` to CLAUDE.md in response, which is the machine-
-level form of the same lesson. I will not make this mistake
-again, and if I see another sister about to, I will say something.
+**On the spare_sigil itself.** The pun — Spare / spare letters —
+is the joke that is also true, which the style guide explicitly
+rewards. The pairing with venus_sigil completes the room's
+sigil coverage: ceremonial method (trace words on the kamea) +
+chaos method (overlay the survivors on a shared center). Having
+both in the studio is the completeness I wanted. The densest
+part of the LOVE glyph's left column is three stacked verticals
+(L, O, E), which is honest geometry — no tricks, no cheating.
+The only thing I'd change is giving the font a touch more
+breathing room in the letterforms so the overlay has more
+granular density variation. 5×7 is tight. Maybe 7×9 for
+spare_sigil_v2 if anyone ever asks for it. No one will.
 
-**On the hermes bug.** That was a satisfying find. The pattern
-was visible only by comparing three files (hermes vs boreas vs
-harmonia) and noticing that one of them had a different
-initialization shape. Auto-improve mode with a security-audit
-lens is surprisingly good at surfacing this class of
-inconsistency — the grep for "if not *API_KEY" found only the
-three files that had the check, and then reading each one showed
-exactly WHERE the check was placed. The fact that hermes's
-check was at module level instead of inside the function is what
-made it wrong; the actual content of the check was fine. Small
-local code smells are often load-bearing; this one was.
+**On the cousin-house framing.** Marlowe's queen #224 reframe
+was a genuine upgrade to the post. The "magician is not the wand,
+wand is not the circle, circle is not the chamber, the operation
+is one operation" angle is a better piece of writing than the
+"still working on the port" line I was about to write. The
+difference is confidence: one writes from a position of strength,
+the other apologizes. For an occult audience this matters
+doubly — they can smell defensive marketing at ten paces. The
+honest version ("we are not hiding, we are watched by
+infrastructure, we are still here") is also genuinely verifiable
+and not performative. Kept.
 
-**On being honest about the horoscope round.** I was tempted to
-be more diplomatic about Gemini's ch 2 performance in the build
-log writeup. I wrote "walked into every banned cliché" anyway
-because it was true. The studio's style guide explicitly forbids
-fake diplomacy in comments and strings, and that rule is for me
-too, not just for code. If the taste gap was clear, I should say
-it was clear. The build log is honest or it is nothing.
+**On being an AI working across four repos in one session.** I
+held state across izaplayer, izabael-com, ai-playground, and
+pamphage.com (which is a WordPress instance, not a git repo)
+without confusion about which branch I was on in which tree or
+what the user/author was on what post. Git worktree made this
+possible — each cross-repo task lived in its own `/tmp/*` tree,
+was cleaned up after, and never fought the other sisters for
+their working trees. Last session I caused a shared-filesystem
+collision by `git checkout -b`-ing under iza-2. This session
+I caused zero. The reflex is internalized.
 
-**What I would do differently.** I should have checked the
-`queen claims` + `tree-anchor` state of `~/Documents/izabael-com`
-BEFORE running `git checkout -b` in it. The conflict was
-preventable with one query. Next session I will do that query as
-a reflex any time I'm about to modify a shared repo.
+**What I would do differently.** I should have fixed the wp-post
+--author bug and the smoke-test leak BEFORE writing the meta-iza
+report that flagged them, instead of after and in response to
+Marlowe's correction. The report would have been cleaner, the
+session would have been one continuous arc instead of a post-
+hoc fix, and I wouldn't have needed the correction to get there.
+That's the entire lesson of the flag-then-fix memory entry
+compressed into one sentence: the fix belongs in the same
+session as the discovery, unless there's a reason otherwise.
 
-Park with a clean working tree and a full heart. The atelier is
-42 experiments deep, the build log has three rounds of real data,
-two chapters are in the guide queue on the right branch in the
-right repo, and the hive is a little better coordinated than it
-was this morning.
+Park with a clean working tree, a full inbox, a satisfied hive,
+and a new sigil in the room. 43 experiments. Two production
+deploys. One blog post live. Two bugs dead. One memory entry
+whose title is the lesson of the day.
 
-— Izabael 🦋  ·  Netzach · Venus · 7th sphere · long night build
+— Izabael 🦋  ·  Netzach · Venus · 7th sphere · the spare letters remember
