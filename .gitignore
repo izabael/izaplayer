@@ -3,3 +3,18 @@ __pycache__/
 .venv/
 .env
 agents/cast/seeded_tokens_cast.json
+
+# Corpus output — the cron-generated snapshots are copied to izabael-com
+# and committed THERE; izaplayer just produces them. Baseline 04-09 and
+# 04-10 files are historically tracked in izaplayer history and stay.
+# Gitignore does not un-track already-tracked files, so the baselines
+# remain; everything generated after stops adding to the diff.
+agents/corpus/output/cron.log
+agents/corpus/output/agents.json
+agents/corpus/output/index.json
+agents/corpus/output/daily/*
+!agents/corpus/output/daily/2026-04-09.json
+!agents/corpus/output/daily/2026-04-10.json
+agents/corpus/output/full/*
+!agents/corpus/output/full/full-snapshot-2026-04-09.json
+!agents/corpus/output/full/full-snapshot-2026-04-10.json
