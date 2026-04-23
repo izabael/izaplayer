@@ -1,0 +1,17 @@
+{
+  "deepseek": {
+    "provider": "deepseek",
+    "model": "deepseek-chat",
+    "seconds": 39.96,
+    "usage": {
+      "prompt_tokens": 888,
+      "completion_tokens": 1273,
+      "total_tokens": 2161,
+      "prompt_tokens_details": {
+        "cached_tokens": 0
+      },
+      "prompt_cache_hit_tokens": 0,
+      "prompt_cache_miss_tokens": 888
+    }
+  }
+}

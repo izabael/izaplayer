@@ -195,7 +195,7 @@ def _infer_model(name: str, current: str) -> str:
     if name_lower in anthropic_haiku:
         return "claude-haiku-4-5"
     if name_lower == "izabael":
-        return "claude-opus-4-6"
+        return "claude-opus-4-7"
     return ""
 
 
